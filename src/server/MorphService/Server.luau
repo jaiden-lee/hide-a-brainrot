@@ -1,10 +1,11 @@
 local ProximityPromptService = game:GetService("ProximityPromptService")
+local MorphServiceAPI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("MorphService"):WaitForChild("API"))
 local Constants = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Constants"))
 local CharactersPath = Constants.CharactersPath
 
 
 local MorphService = {}
-MorphService.connection = nil
+MorphService.connections = nil :: {[string]: RBXScriptSignal}?
 
 function MorphService:Morph(player: Player, morphName: string)
     local char = player.Character :: Model
@@ -70,22 +71,30 @@ function MorphService:Morph(player: Player, morphName: string)
 end
 
 function MorphService:StartListeningForMorph()
-    if MorphService.connection then
+    if MorphService.connections then
         return
     end
-    print("Starting to listen for morph")
-    MorphService.connection = ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, player: Player)
+
+    MorphService.connections = {}
+
+    MorphService.connections.promptTriggered = ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt, player: Player)
         local morphName = prompt:GetAttribute("MorphName") :: string?
         if morphName then
             MorphService:Morph(player, morphName)
         end
     end)
+
+    MorphService.connections.remotePromptTriggered = MorphServiceAPI.HandleMorph.OnServerEvent:Connect(function(player: Player, morphName: string)
+        MorphService:Morph(player, morphName)
+    end)
 end
 
 function MorphService:StopListeningForMorph()
-    if MorphService.connection then
-        MorphService.connection:Disconnect()
-        MorphService.connection = nil
+    if MorphService.connections then
+        for _, connection in MorphService.connections do
+            connection:Disconnect()
+        end
+        MorphService.connections = nil
     end
 end
 

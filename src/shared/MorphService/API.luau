@@ -3,6 +3,6 @@ local Packet = require(game:GetService("ReplicatedStorage"):WaitForChild("Packag
 local MorphServiceAPI = {}
 
 -- HandleMorph(morphName: string) -> boolean
-MorphServiceAPI.HandleMorph = Packet("HandleMorph", Packet.String):Response(Packet.Boolean1)
+MorphServiceAPI.HandleMorph = Packet("HandleMorph", Packet.String)
 
 return MorphServiceAPI
