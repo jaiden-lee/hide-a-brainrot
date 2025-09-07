@@ -1,6 +1,7 @@
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local UserInputService = game:GetService("UserInputService")
 local MorphServiceAPI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("MorphService"):WaitForChild("API"))
+local UIService = require(script.Parent.Parent:WaitForChild("UIService"):WaitForChild("Client"))
 
 local MorphService = {}
 MorphService.highlight = nil :: Highlight?
@@ -30,12 +31,14 @@ function showHighlight(model: Model)
     local highlight = createHighlight()
     highlight.Enabled = true
     highlight.Adornee = model
+    UIService:ShowMorphUI()
 end
 
 function hideHighlight()
     local highlight = createHighlight()
     highlight.Enabled = false
     highlight.Adornee = nil
+    UIService:HideMorphUI()
 end
 
 function MorphService:BindHighlight()
